@@ -29,7 +29,7 @@ La versión de este plug in esta testeada en PHP 5.3 en adelante y MAGENTO 1.7 a
 4. Luego ir a 'System->Configuration , luego en el menu lateral sales->Payment Methods' y configurar desde la pestaña de <strong>Decidir 2</strong>.
 
 Observaci&oacute;n:
-Descomentar: <em>extension=php_curl.dll</em>, <em>extension=php_soap.dll</em> y <em>extension=php_openssl.dll</em> del php.ini, ya que para la conexión al gateway se utiliza la clase <em>SoapClient</em> del API de PHP.
+Descomentar: <em>extension=php_curl.dll</em> y <em>extension=php_openssl.dll</em> del php.ini, ya que para la conexión al gateway se utiliza un <em>API REST</em>, conectándose por medio de PHP.
 <br />
 [<sub>Volver a inicio</sub>](#inicio)
 
