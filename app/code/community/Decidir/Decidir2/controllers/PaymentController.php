@@ -315,7 +315,8 @@ class Decidir_Decidir2_PaymentController extends Mage_Core_Controller_Front_Acti
         if (!$order->getCustomerIsGuest()){
 						$customerData = array(
                 "id" => $this->_getCustomerIdDecidir($order->getCustomerId()),
-                "email" => $order->getCustomerEmail()
+                "email" => $order->getCustomerEmail(),
+                "ip_address" => $order->getRemoteIp()
             );
  						
             $data['customer'] = $customerData; 
