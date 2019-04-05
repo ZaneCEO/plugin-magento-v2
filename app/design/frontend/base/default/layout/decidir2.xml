@@ -3,7 +3,7 @@
     <checkout_onepage_index>
         <reference name="head">
             <block type="core/text" name="your_external_file">
-                <action method="setText"><text><![CDATA[<script src="https://live.decidir.com/static/v2.2.2/decidir.js"></script>]]></text></action>
+                <action method="setText"><text><![CDATA[<script src="https://live.decidir.com/static/v2.5/decidir.js"></script>]]></text></action>
             </block>
             <action method="addItem"><type>skin_css</type><name>css/form.css</name></action>
         </reference>

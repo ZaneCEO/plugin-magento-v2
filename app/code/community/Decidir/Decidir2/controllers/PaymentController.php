@@ -299,9 +299,9 @@ class Decidir_Decidir2_PaymentController extends Mage_Core_Controller_Front_Acti
         $marcaTarjeta = Mage::helper("decidirplanesv1/tarjeta")->getTarjeta($paymentMethodId);
 
         $data = array(
-            "site_transaction_id" => $order->getIncrementId(),
+            "site_transaction_id" => (string)$order->getIncrementId().rand(10,100),
             "token" => $this->getRequest()->get('decidir_token'),
-            "amount" => number_format($order->getGrandTotal(), 2, ".", ""),
+            "amount" => (double)number_format($order->getGrandTotal(), 2, ".", ""),
             "bin" => $this->getRequest()->get('decidir_bin'),
             "installments" => $installments,
             "currency" => "ARS",
@@ -561,7 +561,7 @@ class Decidir_Decidir2_PaymentController extends Mage_Core_Controller_Front_Acti
         $response["status"] = $paymentResponse->getStatus();
         $response["id"] = $paymentResponse->getId();
         $response["site_transaction_id"] = $paymentResponse->getSiteTransactionId();
-        $response["token"] = $paymentResponse->getToken();
+        //$response["token"] = $paymentResponse->getToken();
         $response["payment_method_id"] = $paymentResponse->getPaymentMethodId();
         $response["bin"] = $paymentResponse->getBin();
         $response["amount"] = $paymentResponse->getAmount();

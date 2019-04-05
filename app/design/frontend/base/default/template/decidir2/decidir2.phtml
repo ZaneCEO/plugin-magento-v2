@@ -1,6 +1,8 @@
 <?php
 $quoteid = Mage::getSingleton('checkout/session')->getQuoteId();
-$_code = $this->getMethodCode(); ?>
+$_code = $this->getMethodCode(); 
+$_cs = (Mage::getStoreConfig('payment/decidir2/cybersource_active') == "0") ? "true" : "false";
+?>
 <ul class="form-list" id="payment_form_<?php echo $_code; ?>"
     style="display: none;">
     <input type="hidden" id="deccheckout" name='payment[deccheckout]' value="<?php echo Mage::app()->getFrontController()->getRequest()->getControllerModule(); ?>" />
@@ -159,6 +161,8 @@ $_code = $this->getMethodCode(); ?>
 
 <script type="text/javascript">
 
+    jQTP = jQuery.noConflict();
+
     <?php if(Mage::getStoreConfig('payment/decidir2/modo_test_prod') == "produccion"){ ?>
     const publicApiKey = "<?php echo Mage::getStoreConfig('payment/decidir2/public_api_key'); ?>";
     <?php } else { ?>
@@ -173,46 +177,46 @@ $_code = $this->getMethodCode(); ?>
     url = "https://developers.decidir.com/api/v1";
     <?php } ?>
 
-    jQuery(document).ready(function() {
+    jQTP(document).ready(function() {
         var showTokenSelection = function () {
-            jQuery("#card_selection").hide();
-            jQuery("#token_selection").show();
+            jQTP("#card_selection").hide();
+            jQTP("#token_selection").show();
 
-            jQuery("#token").attr('data-decidir','token');
-            jQuery("#token_security").attr('data-decidir','security_code');
+            jQTP("#token").attr('data-decidir','token');
+            jQTP("#token_security").attr('data-decidir','security_code');
 
-            jQuery("#card_number").removeAttr('data-decidir');
-            jQuery("#security_code").removeAttr('data-decidir');
-            jQuery("#card_expiration_month").removeAttr('data-decidir');
-            jQuery("#card_expiration_year").removeAttr('data-decidir');
-            jQuery("#card_holder_name").removeAttr('data-decidir');
-            jQuery("#card_holder_doc_type").removeAttr('data-decidir');
-            jQuery("#card_holder_doc_number").removeAttr('data-decidir');
+            jQTP("#card_number").removeAttr('data-decidir');
+            jQTP("#security_code").removeAttr('data-decidir');
+            jQTP("#card_expiration_month").removeAttr('data-decidir');
+            jQTP("#card_expiration_year").removeAttr('data-decidir');
+            jQTP("#card_holder_name").removeAttr('data-decidir');
+            jQTP("#card_holder_doc_type").removeAttr('data-decidir');
+            jQTP("#card_holder_doc_number").removeAttr('data-decidir');
 
-            jQuery("#token_yesno").val(1);
+            jQTP("#token_yesno").val(1);
         }
         var showCardSelection = function () {
-            jQuery("#token_selection").hide();
-            jQuery("#card_selection").show();
+            jQTP("#token_selection").hide();
+            jQTP("#card_selection").show();
 
-            jQuery("#token").removeAttr('data-decidir');
-            jQuery("#token_security").removeAttr('data-decidir');
+            jQTP("#token").removeAttr('data-decidir');
+            jQTP("#token_security").removeAttr('data-decidir');
 
-            jQuery("#card_number").attr('data-decidir','card_number');
-            jQuery("#security_code").attr('data-decidir','security_code');
-            jQuery("#card_expiration_month").attr('data-decidir','card_expiration_month');
-            jQuery("#card_expiration_year").attr('data-decidir','card_expiration_year');
-            jQuery("#card_holder_name").attr('data-decidir','card_holder_name');
-            jQuery("#card_holder_doc_type").attr('data-decidir','card_holder_doc_type');
-            jQuery("#card_holder_doc_number").attr('data-decidir','card_holder_doc_number');
+            jQTP("#card_number").attr('data-decidir','card_number');
+            jQTP("#security_code").attr('data-decidir','security_code');
+            jQTP("#card_expiration_month").attr('data-decidir','card_expiration_month');
+            jQTP("#card_expiration_year").attr('data-decidir','card_expiration_year');
+            jQTP("#card_holder_name").attr('data-decidir','card_holder_name');
+            jQTP("#card_holder_doc_type").attr('data-decidir','card_holder_doc_type');
+            jQTP("#card_holder_doc_number").attr('data-decidir','card_holder_doc_number');
 
-            jQuery("#token_yesno").val(0);
+            jQTP("#token_yesno").val(0);
         }
         var setCostoFinancieroDecidir = function (cuotas) {
-            jQuery.ajax("<?php echo Mage::getUrl('decidir2/payment/setCostoFinanciero', array('_secure' => true)); ?>",
+            jQTP.ajax("<?php echo Mage::getUrl('decidir2/payment/setCostoFinanciero', array('_secure' => true)); ?>",
                 {
                     method  : 'POST',
-                    data    : { 'marcaId' : jQuery('#select_card_marcas').val(),
+                    data    : { 'marcaId' : jQTP('#select_card_marcas').val(),
                         'cuotas' : cuotas,
                         'quoteid' : "<?php echo $quoteid ?>"},
                     success : function (response)
@@ -229,10 +233,10 @@ $_code = $this->getMethodCode(); ?>
                 });
         }
         var setCostoFinancieroDecidirToken = function (cuotas) {
-            jQuery.ajax("<?php echo Mage::getUrl('decidir2/payment/setCostoFinancieroToken', array('_secure' => true)); ?>",
+            jQTP.ajax("<?php echo Mage::getUrl('decidir2/payment/setCostoFinancieroToken', array('_secure' => true)); ?>",
                 {
                     method  : 'POST',
-                    data    : { 'token' : jQuery('#token').val(),
+                    data    : { 'token' : jQTP('#token').val(),
                         'cuotas' : cuotas,
                         'quoteid' : "<?php echo $quoteid ?>"},
                     success : function (response)
@@ -249,14 +253,16 @@ $_code = $this->getMethodCode(); ?>
                 });
         }
 
-        jQuery("#card_selection").hide();
-        jQuery("#token_selection").hide();
+        jQTP("#card_selection").hide();
+        jQTP("#token_selection").hide();
 
-        const decidir = new Decidir(url);
+
+        const decidir = new Decidir(url, <?php echo $_cs; ?>);
+
         decidir.setPublishableKey(publicApiKey);
         decidir.setTimeout(0);//se configura sin timeout
 
-        jQuery.ajax("<?php echo Mage::getUrl('decidir2/payment/getTokens', array('_secure' => true)); ?>", {
+        jQTP.ajax("<?php echo Mage::getUrl('decidir2/payment/getTokens', array('_secure' => true)); ?>", {
             method  : 'POST',
             success : function (response)
             {
@@ -265,7 +271,7 @@ $_code = $this->getMethodCode(); ?>
                     if (res.length > 0) {
                         showTokenSelection();
                         for (var i = 0; i < res.length; i++) {
-                            jQuery('#select_tokens').append(jQuery('<option>', {
+                            jQTP('#select_tokens').append(jQTP('<option>', {
                                 value: res[i].key,
                                 text: res[i].value
                             }));
@@ -278,11 +284,11 @@ $_code = $this->getMethodCode(); ?>
             error   : function (e, status)
             {
                 var strMensaje = response.error[0].param;
-                jQuery("#error_form").html(strMensaje);
+                jQTP("#error_form").html(strMensaje);
             }
         });
 
-        jQuery.ajax("<?php echo Mage::getUrl('decidir2/payment/getMarcas', array('_secure' => true)); ?>", {
+        jQTP.ajax("<?php echo Mage::getUrl('decidir2/payment/getMarcas', array('_secure' => true)); ?>", {
             method  : 'POST',
             success : function (response)
             {
@@ -291,7 +297,7 @@ $_code = $this->getMethodCode(); ?>
 
                     if (res.length > 0) {
                         for (var i = 0; i < res.length; i++) {
-                            jQuery('#select_card_marcas').append(jQuery('<option>', {
+                            jQTP('#select_card_marcas').append(jQTP('<option>', {
                                 value: res[i].key,
                                 text: res[i].value
                             }));
@@ -353,44 +359,44 @@ $_code = $this->getMethodCode(); ?>
             if(c == "decidir2") {
                 Payment.prototype.save = Payment.prototype.save.wrap(function (save) {
 
-                    if(jQuery("#token_yesno").val() == 1) {
+                    if(jQTP("#token_yesno").val() == 1) {
                         var form = document.querySelector('#co-payment-form');
                         decidir.createToken(form, function (status, response) {
                             if (status == '200' || status == '201') {
-                                jQuery("#decidir_token").val(response.id);
-                                jQuery("#decidir_token_tarjeta").val(jQuery("#select_tokens").val());
-                                jQuery("#decidir_cardholder_name").val(response.cardholder.name);
-                                jQuery("#decidir_bin").val(response.bin);
-                                jQuery("#decidir_lastfourdigits").val(response.last_four_digits);
-                                jQuery("#decidir_expiration_month").val(response.expiration_month);
-                                jQuery("#decidir_expiration_year").val(response.expiration_year);
-                                jQuery("#decidir_cuotas").val(jQuery("#select_cuotas").val());
+                                jQTP("#decidir_token").val(response.id);
+                                jQTP("#decidir_token_tarjeta").val(jQTP("#select_tokens").val());
+                                jQTP("#decidir_cardholder_name").val(response.cardholder.name);
+                                jQTP("#decidir_bin").val(response.bin);
+                                jQTP("#decidir_lastfourdigits").val(response.last_four_digits);
+                                jQTP("#decidir_expiration_month").val(response.expiration_month);
+                                jQTP("#decidir_expiration_year").val(response.expiration_year);
+                                jQTP("#decidir_cuotas").val(jQTP("#select_cuotas").val());
                                 save();
                             } else {
                                 console.log('ERROR - STATUS: ' + status + ' - Respuesta: ' + response);
                                 var strMensaje = response.error[0].param;
-                                jQuery("#error_form").html(strMensaje);
+                                jQTP("#error_form").html(strMensaje);
                             }
                         });
                     } else {
-                        if (jQuery("#select_card_bancos").val() && jQuery("#select_card_cuotas").val()) {
+                        if (jQTP("#select_card_bancos").val() && jQTP("#select_card_cuotas").val()) {
                             var form = document.querySelector('#co-payment-form');
                             decidir.createToken(form, function (status, response) {
                                 if (status == '200' || status == '201') {
-                                    jQuery("#decidir_token").val(response.id);
-                                    jQuery("#decidir_cardholder_name").val(response.cardholder.name);
-                                    jQuery("#decidir_bin").val(response.bin);
-                                    jQuery("#decidir_lastfourdigits").val(response.last_four_digits);
-                                    jQuery("#decidir_expiration_month").val(response.expiration_month);
-                                    jQuery("#decidir_expiration_year").val(response.expiration_year);
-                                    jQuery("#decidir_marca").val(jQuery("#select_card_marcas").val());
-                                    jQuery("#decidir_banco").val(jQuery("#select_card_bancos").val());
-                                    jQuery("#decidir_cuotas").val(jQuery("#select_card_cuotas").val());
+                                    jQTP("#decidir_token").val(response.id);
+                                    jQTP("#decidir_cardholder_name").val(response.cardholder.name);
+                                    jQTP("#decidir_bin").val(response.bin);
+                                    jQTP("#decidir_lastfourdigits").val(response.last_four_digits);
+                                    jQTP("#decidir_expiration_month").val(response.expiration_month);
+                                    jQTP("#decidir_expiration_year").val(response.expiration_year);
+                                    jQTP("#decidir_marca").val(jQTP("#select_card_marcas").val());
+                                    jQTP("#decidir_banco").val(jQTP("#select_card_bancos").val());
+                                    jQTP("#decidir_cuotas").val(jQTP("#select_card_cuotas").val());
                                     save();
                                 } else {
                                     console.log('ERROR - STATUS: ' + status + ' - Respuesta: ' + response);
                                     var strMensaje = response.error[0].param;
-                                    jQuery("#error_form").html(strMensaje);
+                                    jQTP("#error_form").html(strMensaje);
                                 }
                             });
                         } else {
@@ -403,21 +409,21 @@ $_code = $this->getMethodCode(); ?>
             }
         });
 
-        jQuery("#button_card").click(function(e){
+        jQTP("#button_card").click(function(e){
             showCardSelection();
         });
 
-        jQuery("#button_token").click(function(e){
+        jQTP("#button_token").click(function(e){
             showTokenSelection();
         });
 
-        jQuery("#select_card_marcas").change(function() {
-            jQuery('#select_card_bancos').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un banco</option>');
-            jQuery('#select_card_cuotas').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un plan</option>');
-            jQuery.ajax("<?php echo Mage::getUrl('decidir2/payment/getBancos', array('_secure' => true)); ?>",
+        jQTP("#select_card_marcas").change(function() {
+            jQTP('#select_card_bancos').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un banco</option>');
+            jQTP('#select_card_cuotas').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un plan</option>');
+            jQTP.ajax("<?php echo Mage::getUrl('decidir2/payment/getBancos', array('_secure' => true)); ?>",
                 {
                     method  : 'POST',
-                    data    : { 'marcaId' : jQuery('#select_card_marcas').val() },
+                    data    : { 'marcaId' : jQTP('#select_card_marcas').val() },
                     success : function (response)
                     {
                         if (response) {
@@ -425,7 +431,7 @@ $_code = $this->getMethodCode(); ?>
 
                             if (res.length > 0) {
                                 for (var i = 0; i < res.length; i++) {
-                                    jQuery('#select_card_bancos').append(jQuery('<option>', {
+                                    jQTP('#select_card_bancos').append(jQTP('<option>', {
                                         value: res[i].key,
                                         text: res[i].value
                                     }));
@@ -440,13 +446,13 @@ $_code = $this->getMethodCode(); ?>
                 });
         });
 
-        jQuery("#select_card_bancos").change(function() {
-            jQuery('#select_card_cuotas').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un plan</option>');
-            jQuery.ajax("<?php echo Mage::getUrl('decidir2/payment/getCuotas', array('_secure' => true)); ?>",
+        jQTP("#select_card_bancos").change(function() {
+            jQTP('#select_card_cuotas').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un plan</option>');
+            jQTP.ajax("<?php echo Mage::getUrl('decidir2/payment/getCuotas', array('_secure' => true)); ?>",
                 {
                     method  : 'POST',
-                    data    : { 'marcaId' : jQuery('#select_card_marcas').val(),
-                        'bancoId' : jQuery('#select_card_bancos').val(),
+                    data    : { 'marcaId' : jQTP('#select_card_marcas').val(),
+                        'bancoId' : jQTP('#select_card_bancos').val(),
                         'quote' : "<?php echo $quoteid ?>"},
                     success : function (response)
                     {
@@ -455,7 +461,7 @@ $_code = $this->getMethodCode(); ?>
 
                             if (res.length > 0) {
                                 for (var i = 0; i < res.length; i++) {
-                                    jQuery('#select_card_cuotas').append(jQuery('<option>', {
+                                    jQTP('#select_card_cuotas').append(jQTP('<option>', {
                                         value: res[i].key,
                                         text: res[i].value
                                     }));
@@ -470,13 +476,13 @@ $_code = $this->getMethodCode(); ?>
                 });
         });
 
-        jQuery("#select_tokens").change(function() {
-            jQuery('#select_cuotas').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un plan</option>');
-            jQuery('#token').val(jQuery('#select_tokens').val());
-            jQuery.ajax("<?php echo Mage::getUrl('decidir2/payment/getCuotasToken', array('_secure' => true)); ?>",
+        jQTP("#select_tokens").change(function() {
+            jQTP('#select_cuotas').empty().append('<option selected disabled hidden style="display: none" value="">Seleccione un plan</option>');
+            jQTP('#token').val(jQTP('#select_tokens').val());
+            jQTP.ajax("<?php echo Mage::getUrl('decidir2/payment/getCuotasToken', array('_secure' => true)); ?>",
                 {
                     method  : 'POST',
-                    data    : { 'token' : jQuery('#token').val(),
+                    data    : { 'token' : jQTP('#token').val(),
                         'quote' : "<?php echo $quoteid ?>"},
                     success : function (response)
                     {
@@ -485,7 +491,7 @@ $_code = $this->getMethodCode(); ?>
 
                             if (res.length > 0) {
                                 for (var i = 0; i < res.length; i++) {
-                                    jQuery('#select_cuotas').append(jQuery('<option>', {
+                                    jQTP('#select_cuotas').append(jQTP('<option>', {
                                         value: res[i].key,
                                         text: res[i].value
                                     }));
@@ -500,12 +506,12 @@ $_code = $this->getMethodCode(); ?>
                 });
         });
 
-        jQuery("#select_card_cuotas").change(function() {
-            setCostoFinancieroDecidir(jQuery('#select_card_cuotas').val());
+        jQTP("#select_card_cuotas").change(function() {
+            setCostoFinancieroDecidir(jQTP('#select_card_cuotas').val());
         });
 
-        jQuery("#select_cuotas").change(function() {
-            setCostoFinancieroDecidirToken(jQuery('#select_cuotas').val());
+        jQTP("#select_cuotas").change(function() {
+            setCostoFinancieroDecidirToken(jQTP('#select_cuotas').val());
         });
     });
 </script>

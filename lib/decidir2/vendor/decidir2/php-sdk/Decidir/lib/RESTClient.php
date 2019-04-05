@@ -111,6 +111,7 @@ class RESTClient{
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $header_http);
 
+
 		$response = curl_exec($curl);
 		$codeResponse = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
