@@ -54,7 +54,7 @@ Los principales Medios de pagos vendrán precargados, así mismo las principales
 #### Medios de pago:
 En el ABM de medios de pago encontramos los siguientes campos:
 * Medio de Pago: El nombre con el que se mostrará dicho medio de pago.
-* Decidir: El código del medio de pago en Decidir. [(Ver Tabla en documentación del servicio)](https://decidir.gitbooks.io/documentacion/content/Anexos/TablasReferencia/MediosDePago.html)
+* Decidir: El código del medio de pago en Decidir. [(Ver Tabla en documentación del servicio)](https://decidirv2.api-docs.io/1.0/tablas-de-referencia-e-informacion-para-el-implementador/medios-de-pago-disponibles)
 * Tipo: _Tarjeta_ u _offline_. Por el momento solo está disponible el primer tipo.
 * Activo: Flag para activar/desactivar el medio de pago.
 
