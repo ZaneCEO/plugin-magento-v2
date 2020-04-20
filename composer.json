@@ -1,0 +1,10 @@
+{
+    "name": "decidir/plugin-magento",
+    "type": "magento-module",
+    "description": "Módulo de integración de Decidir para Magento",
+    "homepage": "https://github.com/decidir/plugin-magento-v2",
+    "require": {
+        "php": ">=5.4",
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
